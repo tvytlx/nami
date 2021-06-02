@@ -1,0 +1,29 @@
+{
+  "name": "nami",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tvytlx/nami.git"
+  },
+  "author": "XiaoTan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tvytlx/nami/issues"
+  },
+  "homepage": "https://github.com/tvytlx/nami#readme",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "esm": "^3.2.25",
+    "mocha": "^8.4.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "snabbdom": "^3.0.1"
+  }
+}
