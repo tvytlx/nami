@@ -10,17 +10,8 @@
  *     chars: function(text) {},
  *     comment: function(text) {}
  * });
- *
- * // or to get an XML string:
- * HTMLtoXML(htmlString);
- *
- * // or to get an XML DOM Document
- * HTMLtoDOM(htmlString);
- *
- * // or to inject into an existing document/DOM node
- * HTMLtoDOM(htmlString, document);
- * HTMLtoDOM(htmlString, document.body);
- *
+ * 
+ * Modified by XiaoTan
  */
 
 // Regular Expressions for parsing tags and attributes
