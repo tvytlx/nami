@@ -1,5 +1,6 @@
 import htmlParsing from "../src/html-parser";
-import { compileToFunc } from "../src/render";
+import { compileToFunc, parseHtml } from "../src/render";
+import { h } from "snabbdom";
 
 var assert = require("assert");
 describe("html parser", function () {
@@ -26,14 +27,23 @@ describe("html parser", function () {
     );
   });
 });
-describe("compile template to function string", function () {
-  it("compile should work", function () {
-    let result = compileToFunc(
+describe("compile template", function () {
+  it("compile to function string", function () {
+    let result = parseHtml(
       `<html><body><div :attr="attrv" @attr2="attr2v">hello</div></body></html>`
     );
     assert.strictEqual(
-      result,
+      result.funcStr,
       `h('html', {on: {}, props: {}}, [h('body', {on: {}, props: {}}, [h('div', {on: {attr2:'attr2v',}, props: {attr:'attrv',}}, ['hello'])])])`
     );
+  });
+  it("compile to function then run corrected", function () {
+    context = {
+      h, attrv: '你好', attr2: ()=>{console.log('Nihao')}
+    }
+    let func = compileToFunc(
+      `<html><body><div :attr="attrv" @attr2="attr2v">hello</div></body></html>`
+    );
+    func.call(context);
   });
 });

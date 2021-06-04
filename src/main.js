@@ -1,5 +1,5 @@
 import { toVNode } from "./vdom";
-import render from "./render";
+import render, { compileToFunc } from "./render";
 
 function getRenderFuncs(node) {
   if (!("__renderFuncs" in node)) {
@@ -15,13 +15,12 @@ export default class Nami {
   initial({ root, data, methods }) {
     window.nami = this;
     this._deps = {};
-    this.vnodeTemplateTree = toVNode(document.querySelector(root));
+    this.vnodeTemplateTree = compileToFunc(document.querySelector(root));
     this.data = this.makeReactive(data());
     this.methods = methods;
     this.collectDeps();
     Object.keys(this._deps).forEach((key) => {
       this._deps[key].forEach(({ vnode }) => {
-        debugger;
         render(vnode);
       });
     });

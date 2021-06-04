@@ -61,8 +61,12 @@ function parseHtml(template) {
 }
 
 function compileToFunc(template) {
-  const dom = parseHtml(template);
-  return dom.funcStr;
+  const { funcStr } = parseHtml(template);
+  try {
+    return new Function(`with(this){ return ${funcStr}}`);
+  } catch (err) {
+    return null;
+  }
 }
 
-export { compileToFunc };
+export { compileToFunc, parseHtml };
