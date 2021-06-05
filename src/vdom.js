@@ -21,9 +21,10 @@ const patch = init([
 ]);
 
 // update dom tree
-function update(vnode) {
-  oldNode = vnode._vnode;
-  patch(oldNode, vnode);
+function update(vm) {
+  const newVnode = vm.render();
+  patch(vm.vnode, newVnode);
+  vm.vnode = newVnode;
 }
 
 function createElm() {}

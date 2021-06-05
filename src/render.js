@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { createElm } from "./vdom";
 import htmlParsing from "./html-parser";
 import { h } from "snabbdom";
@@ -9,17 +8,25 @@ function compileAttrs(attrs) {
   attrs.forEach(({ name, value, escaped }) => {
     switch (name[0]) {
       case "@":
-        eventFuncStr += `${name.slice(1)}:'${value}',`;
+        eventFuncStr += `${name.slice(1)}: (event)=>{${value}.call(this)},`;
         break;
       case ":":
         // support :style
-        userFuncStr += `${name.slice(1)}:'${value}',`;
+        userFuncStr += `${name.slice(1)}:${value},`;
         break;
       default:
         break;
     }
   });
   return `{on: {${eventFuncStr}}, props: {${userFuncStr}}}`;
+}
+
+function compileText(text) {
+  let str = `\`${text}\``;
+  return Array.from(text.matchAll(/{{\s*(\w+)?\s*}}/g)).reduce((acc, item) => {
+    const capture = item[1];
+    return acc + `.replace(/{{\\s*${capture}\\s*}}/g, ${capture})`;
+  }, str);
 }
 
 function compileNode(peekNode, children) {
@@ -52,7 +59,7 @@ function parseHtml(template) {
     chars: (text) => {
       stack.push({
         completed: true,
-        funcStr: `'${text}'`,
+        funcStr: compileText(text),
       });
     },
     comment: () => {},
@@ -63,10 +70,12 @@ function parseHtml(template) {
 function compileToFunc(template) {
   const { funcStr } = parseHtml(template);
   try {
+    console.debug(funcStr);
     return new Function(`with(this){ return ${funcStr}}`);
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
 
-export { compileToFunc, parseHtml };
+export { compileToFunc, parseHtml, compileText };
