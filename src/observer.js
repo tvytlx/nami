@@ -1,17 +1,21 @@
 import { update } from "./vdom";
 
+let taskQueue = [];
+let wait = false;
+
 class Dep {
   // Watcher
   target;
 
   constructor(vm) {
-    this.id = Date().now;
+    this.id = Date.now();
     this.vm = vm;
     this.subIds = new Set();
     this.subs = [];
   }
   addSub(sub) {
     if (!this.subIds.has(sub.id)) {
+      this.subIds.add(sub.id);
       this.subs.push(sub);
     }
   }
@@ -23,8 +27,15 @@ class Dep {
   }
   notify() {
     this.subs.forEach((sub) => {
-      // 非常奇怪的是，必须有个tick，否则两个同时的patch会只有一个生效
-      setTimeout(() => sub.run());
+      const task = () => sub.run();
+      if (!wait) {
+        setTimeout(() => {
+          wait = false;
+          taskQueue.forEach((fn) => fn());
+        });
+        wait = true;
+      }
+      taskQueue.push(task);
     });
   }
 }
@@ -35,9 +46,13 @@ class Watcher {
     this.vm = vm;
     this.cb = cb;
     this.deps = [];
+    this.depIds = new Set();
   }
   addDep(dep) {
-    this.deps.push(dep);
+    if (!this.depIds.has(dep.id)) {
+      this.deps.push(dep);
+      this.depIds.add(dep.id);
+    }
     dep.addSub(this);
   }
   // 每次更新都触发，效率低，之后改成nextTick的形式
