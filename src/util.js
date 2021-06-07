@@ -13,4 +13,10 @@ function shareProperty(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-export { shareProperty };
+let __uuid = 0;
+function uuid() {
+  __uuid += 1;
+  return __uuid;
+}
+
+export { shareProperty, uuid };

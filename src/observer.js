@@ -1,3 +1,4 @@
+import { uuid } from "./util";
 import { update } from "./vdom";
 
 let taskQueue = [];
@@ -8,7 +9,7 @@ class Dep {
   target;
 
   constructor(vm) {
-    this.id = Date.now();
+    this.id = uuid();
     this.vm = vm;
     this.subIds = new Set();
     this.subs = [];
@@ -32,6 +33,7 @@ class Dep {
         setTimeout(() => {
           wait = false;
           taskQueue.forEach((fn) => fn());
+          taskQueue = [];
         });
         wait = true;
       }
@@ -42,7 +44,7 @@ class Dep {
 
 class Watcher {
   constructor(vm, cb) {
-    this.id = Date.now();
+    this.id = uuid();
     this.vm = vm;
     this.cb = cb;
     this.deps = [];
@@ -55,9 +57,8 @@ class Watcher {
     }
     dep.addSub(this);
   }
-  // 每次更新都触发，效率低，之后改成nextTick的形式
   run() {
-    if (this.cb) this.cb.call(this.vm);
+    if (this.cb) this.cb.call(this.vm, this.vm[this.cb.name]);
     else update(this.vm);
   }
 }

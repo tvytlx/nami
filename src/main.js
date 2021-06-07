@@ -5,10 +5,6 @@ import { shareProperty } from "./util";
 
 const depMap = {};
 
-/**
- * everytime when component created, now only support root component
- * @param {component instance} vm
- */
 function makeReactive(vm, target) {
   return new Proxy(target, {
     get(obj, prop) {
@@ -56,7 +52,7 @@ class Nami {
     Object.keys(watch).forEach((key) => {
       Dep.target = new Watcher(this, watch[key]);
       // 触发依赖收集
-      this.data.key;
+      this.data[key];
     });
   }
   mount() {
