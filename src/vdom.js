@@ -27,6 +27,4 @@ function update(vm) {
   vm.vnode = newVnode;
 }
 
-function createElm() {}
-
-export { toVNode, update, createElm };
+export { toVNode, update };

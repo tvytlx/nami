@@ -1,7 +1,8 @@
 import { uuid } from "./util";
 import { update } from "./vdom";
 
-let taskQueue = [];
+const subsMap = {};
+let taskQueue = new Set();
 let wait = false;
 
 class Dep {
@@ -28,16 +29,15 @@ class Dep {
   }
   notify() {
     this.subs.forEach((sub) => {
-      const task = () => sub.run();
       if (!wait) {
         setTimeout(() => {
           wait = false;
-          taskQueue.forEach((fn) => fn());
-          taskQueue = [];
+          Array.from(taskQueue).forEach((id) => subsMap[id].run());
+          taskQueue = new Set();
         });
         wait = true;
       }
-      taskQueue.push(task);
+      taskQueue.add(sub.id);
     });
   }
 }
@@ -45,6 +45,7 @@ class Dep {
 class Watcher {
   constructor(vm, cb) {
     this.id = uuid();
+    subsMap[this.id] = this;
     this.vm = vm;
     this.cb = cb;
     this.deps = [];
@@ -58,6 +59,7 @@ class Watcher {
     dep.addSub(this);
   }
   run() {
+    Dep.target = this;
     if (this.cb) this.cb.call(this.vm, this.vm[this.cb.name]);
     else update(this.vm);
   }

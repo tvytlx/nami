@@ -1,6 +1,6 @@
-import { createElm } from "./vdom";
 import htmlParsing from "./html-parser";
-import { h } from "snabbdom";
+import { components } from "./components";
+import { uuid } from "./util";
 
 function compileAttrs(attrs) {
   let eventFuncStr = "";
@@ -8,7 +8,9 @@ function compileAttrs(attrs) {
   attrs.forEach(({ name, value, escaped }) => {
     switch (name[0]) {
       case "@":
-        eventFuncStr += `${name.slice(1)}: (event)=>{${value}.call(this)},`;
+        eventFuncStr += `${name.slice(
+          1
+        )}: (...args)=>{${value}.call(this, ...args)},`;
         break;
       case ":":
         // support :style
@@ -46,7 +48,19 @@ function parseHtml(template) {
         attrs,
       });
     },
-    end: () => {
+    end: (tag) => {
+      if (tag in components) {
+        // 忽略掉组件的所有children
+        let peekNode = stack.pop();
+        while (peekNode.completed) {
+          peekNode = stack.pop();
+        }
+        stack.push({
+          completed: true,
+          funcStr: `createComponent('${tag}', ${uuid()})`,
+        });
+        return;
+      }
       let children = [];
       let peekNode = stack.pop();
       while (peekNode.completed) {
@@ -68,7 +82,7 @@ function parseHtml(template) {
 }
 
 function compileToFunc(template) {
-  const { funcStr } = parseHtml(template);
+  const { funcStr } = parseHtml(template.trim());
   try {
     console.debug(funcStr);
     return new Function(`with(this){ return ${funcStr}}`);
