@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app" @click="testClick">
+      parent data {{num}}
+      <test-component></test-component>
+    </div>
+  </body>
+  <script src="../dist/nami.js"></script>
+  <script>
+    Nami.component("test-component", {
+      data() {
+        return {
+          num: 1,
+        };
+      },
+      methods: {
+        clickMe(event) {
+          console.log("component clicked");
+          event.stopPropagation();
+          this.num += 1;
+        },
+      },
+      template: `
+      <div @click="clickMe">component data {{num}}</div>
+      `,
+    });
+    new Nami({
+      root: "#app",
+      data() {
+        return {
+          color: "red",
+          text: "hello world",
+          num: 1,
+        };
+      },
+      methods: {
+        testClick(event, node) {
+          console.log(event, node);
+          console.log("parent clicked");
+          this.num += 1;
+        },
+      },
+      watch: {
+        num(newVal) {
+          console.log(newVal);
+        },
+      },
+    }).mount();
+  </script>
+</html>
