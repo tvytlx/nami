@@ -9,6 +9,7 @@
   <body>
     <div id="app" @click="testClick">
       parent data {{num}}
+      <div>nothing</div>
       <test-component></test-component>
     </div>
   </body>
@@ -28,7 +29,7 @@
         },
       },
       template: `
-      <div @click="clickMe">component data {{num}}</div>
+      <div>component data {{num}}<button @click="clickMe">click me</button></div>
       `,
     });
     new Nami({

@@ -1,6 +1,7 @@
 import htmlParsing from "../src/html-parser";
 import { compileToFunc, parseHtml, compileText } from "../src/render";
 import { h } from "snabbdom";
+import { AssertionError } from "assert";
 
 var assert = require("assert");
 describe("html parser", function () {
@@ -34,7 +35,14 @@ describe("compile template", function () {
     );
     assert.strictEqual(
       result.funcStr,
-      `h('html', {on: {}, props: {}}, [h('body', {on: {}, props: {}}, [h('div', {on: {attr2:'attr2v',}, props: {attr:'attrv',}}, ['hello'])])])`
+      "h('html', {on: {}, props: {}}, [h('body', {on: {}, props: {}}, [h('div', {on: {attr2: (...args)=>{attr2v.call(this, ...args)},}, props: {attr:attrv,}}, [`hello`])])])"
+    );
+    result = parseHtml(
+      `<div>component data {{num}}<button type="button" @click="clickMe">clickme</button></div>`
+    );
+    assert.strictEqual(
+      result.funcStr,
+      "h('div', {on: {}, props: {}}, [`component data {{num}}`.replace(/{{\\s*num\\s*}}/g, num),h('button', {on: {click: (...args)=>{clickMe.call(this, ...args)},}, props: {}}, [`clickme`])])"
     );
   });
   it("compile to function then run corrected", function () {
@@ -53,7 +61,7 @@ describe("compile template", function () {
   it("compile text", function () {
     assert.strictEqual(
       compileText(" {{abc}} {{abcd  }}"),
-      "' {{abc}} {{abcd  }}'.replace(/{{s*abcs*}}/g, abc).replace(/{{s*abcds*}}/g, abcd)"
+      "` {{abc}} {{abcd  }}`.replace(/{{\\s*abc\\s*}}/g, abc).replace(/{{\\s*abcd\\s*}}/g, abcd)"
     );
   });
 });
