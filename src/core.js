@@ -32,7 +32,10 @@ function makeReactive(vm, target) {
     set(obj, prop, value) {
       const dep = prop in vm.depMap ? vm.depMap[prop] : new Dep();
       vm.depMap[prop] = dep;
-      dep.notify();
+      // 如果值不变，则不通知
+      if (obj[prop] !== value) {
+        dep.notify();
+      }
       return Reflect.set(...arguments);
     },
   });

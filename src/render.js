@@ -5,6 +5,7 @@ import { uuid } from "./util";
 function compileAttrs(attrs) {
   let eventFuncStr = "";
   let userFuncStr = "";
+  let userAttrStr = "";
   attrs.forEach(({ name, value, escaped }) => {
     switch (name[0]) {
       case "@":
@@ -13,14 +14,23 @@ function compileAttrs(attrs) {
         )}: (...args)=>{${value}.call(this, ...args)},`;
         break;
       case ":":
-        // support :style
-        userFuncStr += `${name.slice(1)}:${value},`;
+        // support :style :bind
+        let directive = name.slice(1);
+        if (directive === "model") {
+          userAttrStr += `value:${value},`;
+          userFuncStr += `value:${value},`;
+          eventFuncStr += `input: (ev, node)=>{${value} = node.elm.value;},`;
+        } else {
+          userFuncStr += `${directive}:${value},`;
+        }
         break;
       default:
+        userFuncStr += `${name}:'${value}',`;
+        userAttrStr += `${name}:'${value}',`;
         break;
     }
   });
-  return `{on: {${eventFuncStr}}, props: {${userFuncStr}}}`;
+  return `{on: {${eventFuncStr}}, props: {${userFuncStr}}, attrs: {${userAttrStr}}}`;
 }
 
 function compileText(text) {
@@ -42,6 +52,15 @@ function parseHtml(template) {
   const stack = [];
   htmlParsing(template, {
     start: (tag, attrs, unary) => {
+      if (["input", "br"].includes(tag)) {
+        const node = {
+          tag,
+          attrs,
+        };
+        compileNode(node, []);
+        stack.push(node);
+        return;
+      }
       stack.push({
         completed: false,
         tag,

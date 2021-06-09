@@ -35,14 +35,14 @@ describe("compile template", function () {
     );
     assert.strictEqual(
       result.funcStr,
-      "h('html', {on: {}, props: {}}, [h('body', {on: {}, props: {}}, [h('div', {on: {attr2: (...args)=>{attr2v.call(this, ...args)},}, props: {attr:attrv,}}, [`hello`])])])"
+      "h('html', {on: {}, props: {}, attrs: {}}, [h('body', {on: {}, props: {}, attrs: {}}, [h('div', {on: {attr2: (...args)=>{attr2v.call(this, ...args)},}, props: {attr:attrv,}, attrs: {}}, [`hello`])])])"
     );
     result = parseHtml(
       `<div>component data {{num}}<button type="button" @click="clickMe">clickme</button></div>`
     );
     assert.strictEqual(
       result.funcStr,
-      "h('div', {on: {}, props: {}}, [`component data {{num}}`.replace(/{{\\s*num\\s*}}/g, num),h('button', {on: {click: (...args)=>{clickMe.call(this, ...args)},}, props: {}}, [`clickme`])])"
+      "h('div', {on: {}, props: {}, attrs: {}}, [`component data {{num}}`.replace(/{{\\s*num\\s*}}/g, num),h('button', {on: {click: (...args)=>{clickMe.call(this, ...args)},}, props: {type:'button',}, attrs: {type:'button',}}, [`clickme`])])"
     );
   });
   it("compile to function then run corrected", function () {

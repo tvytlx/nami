@@ -7,9 +7,9 @@
     <title>Document</title>
   </head>
   <body>
-    <div id="app" @click="testClick">
-      parent data {{num}}
-      <div>nothing</div>
+    <div id="app">
+      <h1>@event</h1>
+      <div @click="testClick"></div>
       <test-component></test-component>
     </div>
   </body>
@@ -23,21 +23,26 @@
       },
       methods: {
         clickMe(event) {
-          console.log("component clicked");
           event.stopPropagation();
           this.num += 1;
         },
       },
       template: `
-      <div>component data {{num}}<button @click="clickMe">click me</button></div>
+      <div>
+        <h1>:model</h1>
+        num: {{num}}
+        <button @click="clickMe">increase</button>
+        <br/>
+        <input id="number" type="num" :model="num">
+      </div>
       `,
     });
+  </script>
+  <script>
     new Nami({
       root: "#app",
       data() {
         return {
-          color: "red",
-          text: "hello world",
           num: 1,
         };
       },
