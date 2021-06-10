@@ -1,0 +1,15 @@
+Nami.component("n-card", {
+  data() {
+    return {};
+  },
+  methods: {
+    clickMe(event) {
+      alert("clicked");
+    },
+  },
+  template: `
+<div>
+  <button @click="clickMe">clickMe</button>
+</div>
+  `,
+});

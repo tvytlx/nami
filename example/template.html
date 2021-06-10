@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html ${attributes}>
+  <head>
+    <title>Nami</title>
+  </head>
+  <body>
+    <div id="app">exampleHtml</div>
+    <script src="/dist/nami.js"></script>
+    exampleScripts
+    <script>
+      new Nami({
+        root: "#app",
+        data() {
+          return {};
+        },
+      }).mount();
+    </script>
+  </body>
+</html>
