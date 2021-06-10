@@ -14,7 +14,7 @@ function compileAttrs(attrs) {
         )}: (...args)=>{${value}.call(this, ...args)},`;
         break;
       case ":":
-        // support :style :bind
+        // support :model
         let directive = name.slice(1);
         if (directive === "model") {
           userAttrStr += `value:${value},`;

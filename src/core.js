@@ -69,11 +69,16 @@ class Nami {
     this.vnode.__instance = this;
   }
   initData(data, methods) {
-    if (!data) return;
-    Object.keys(data).forEach((key) => shareProperty(this, "data", key));
-    this.data = makeReactive(this, data);
-    this.methods = methods;
-    Object.keys(methods).forEach((key) => shareProperty(this, "methods", key));
+    if (data) {
+      Object.keys(data).forEach((key) => shareProperty(this, "data", key));
+      this.data = makeReactive(this, data);
+    }
+    if (methods) {
+      this.methods = methods;
+      Object.keys(methods).forEach((key) =>
+        shareProperty(this, "methods", key)
+      );
+    }
     this.helper = { h, createComponent };
     Object.keys(this.helper).forEach((key) =>
       shareProperty(this, "helper", key)
