@@ -63,5 +63,9 @@ describe("compile template", function () {
       compileText(" {{abc}} {{abcd  }}"),
       "` {{abc}} {{abcd  }}`.replace(/{{\\s*abc\\s*}}/g, abc).replace(/{{\\s*abcd\\s*}}/g, abcd)"
     );
+    assert.strictEqual(
+      compileText(" {{abc.abc}} {{abc}}"),
+      "` {{abc.abc}} {{abc}}`.replace(/{{\\s*abc.abc\\s*}}/g, abc.abc).replace(/{{\\s*abc\\s*}}/g, abc)"
+    );
   });
 });

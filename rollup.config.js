@@ -1,8 +1,12 @@
 import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
+import babel from "@rollup/plugin-babel";
 
 import html from "@rollup/plugin-html";
 import example from "./example/index";
 import fs from "fs";
+import axios from "axios";
 
 function processExample() {
   let exampleScripts = "";
@@ -32,5 +36,18 @@ export default {
     file: "dist/nami.js",
     format: "umd",
   },
-  plugins: [resolve(), html(htmlPluginOption)],
+  external: [/@babel\/runtime/],
+  plugins: [
+    resolve({ mainFields: ["jsnext", "preferBuiltins", "browser"] }),
+    commonjs({
+      browser: true,
+    }),
+    babel({
+      exclude: ["node_modules/**"],
+      babelHelpers: "runtime",
+      plugins: ["@babel/plugin-transform-runtime"],
+    }),
+    json(),
+    html(htmlPluginOption),
+  ],
 };

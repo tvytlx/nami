@@ -35,10 +35,16 @@ function compileAttrs(attrs) {
 
 function compileText(text) {
   let str = `\`${text}\``;
-  return Array.from(text.matchAll(/{{\s*(\w+)?\s*}}/g)).reduce((acc, item) => {
-    const capture = item[1];
-    return acc + `.replace(/{{\\s*${capture}\\s*}}/g, ${capture})`;
-  }, str);
+  return Array.from(text.matchAll(/{{\s*([\w\.]+)?\s*}}/g)).reduce(
+    (acc, item) => {
+      const capture = item[1];
+      return (
+        acc +
+        `.replace(/{{\\s*${capture.replace(".", `\.`)}\\s*}}/g, ${capture})`
+      );
+    },
+    str
+  );
 }
 
 function compileNode(peekNode, children) {
@@ -91,9 +97,18 @@ function parseHtml(template) {
           }
         });
         slotVnodeMapStr += "}";
+        const props = {};
+        peekNode.attrs
+          .filter((attr) => attr.name.startsWith("p-"))
+          .forEach((attr) => (props[attr.name.slice(2)] = attr.value));
+        // 暂时不支持父子传参数传object，只支持json序列化
         stack.push({
           completed: true,
-          funcStr: `createComponent('${tag}', ${uuid()}, ${slotVnodeMapStr})`,
+          funcStr: `createComponent(
+            '${tag}',
+            ${uuid()},
+            ${slotVnodeMapStr},
+            ${JSON.stringify(props)})`,
         });
         return;
       }

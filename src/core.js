@@ -3,8 +3,9 @@ import { Watcher, Dep } from "./observer";
 import { toVNode, h } from "snabbdom";
 import { shareProperty, uuid } from "./util";
 import { components, componentCache } from "./components";
+import axios from "axios";
 
-function createComponent(name, key, slotVnode) {
+function createComponent(name, key, slotVnode, props) {
   let componentInstance;
   let uuid = name + key;
   if (uuid in componentCache) {
@@ -16,6 +17,7 @@ function createComponent(name, key, slotVnode) {
       ...components[name],
       isComponent: true,
       slotVnode,
+      props,
     });
     componentCache[uuid] = componentInstance;
   }
@@ -52,7 +54,21 @@ class Nami {
     components[name] = options;
   }
 
-  initial({ root, data, methods, watch, template, slotVnode, isComponent }) {
+  async request(uri) {
+    return await axios.get(uri);
+  }
+
+  initial({
+    root,
+    data,
+    methods,
+    watch,
+    template,
+    slotVnode,
+    isComponent,
+    props,
+    created,
+  }) {
     this.id = uuid();
     this.depMap = {};
     this.slotVnode = slotVnode || {};
@@ -64,12 +80,17 @@ class Nami {
       this.render = compileToFunc(template);
       Dep.target = this.watcher;
       this.vnode = this.render();
+      this.props = props;
     } else {
       const templateNode = document.querySelector(root);
       this.vnode = toVNode(templateNode);
       this.render = compileToFunc(templateNode.outerHTML);
     }
     this.vnode.__instance = this;
+    // hooks
+    if (created) {
+      created.call(this);
+    }
   }
   initData(data, methods) {
     if (data) {
