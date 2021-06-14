@@ -4,7 +4,7 @@ import { toVNode, h } from "snabbdom";
 import { shareProperty, uuid } from "./util";
 import { components, componentCache } from "./components";
 
-function createComponent(name, key) {
+function createComponent(name, key, slotVnode) {
   let componentInstance;
   let uuid = name + key;
   if (uuid in componentCache) {
@@ -15,6 +15,7 @@ function createComponent(name, key) {
     componentInstance = new Nami({
       ...components[name],
       isComponent: true,
+      slotVnode,
     });
     componentCache[uuid] = componentInstance;
   }
@@ -51,9 +52,11 @@ class Nami {
     components[name] = options;
   }
 
-  initial({ root, data, methods, watch, template, isComponent }) {
+  initial({ root, data, methods, watch, template, slotVnode, isComponent }) {
     this.id = uuid();
     this.depMap = {};
+    this.slotVnode = slotVnode || {};
+    this.isComponent = isComponent;
     this.watcher = new Watcher(this);
     this.initData(data(), methods);
     this.initUserWatcher(watch);

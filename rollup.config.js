@@ -8,9 +8,9 @@ function processExample() {
   let exampleScripts = "";
   let exampleHtml = "";
   example.forEach((name) => {
+    exampleScripts += `<script src="/example/${name}.js"></script>`;
     // 复用组件，非example代码
     if (name.startsWith("n-")) return;
-    exampleScripts += `<script src="/example/${name}.js"></script>`;
     exampleHtml += `<${name}></${name}>`;
   });
   let content = fs.readFileSync(__dirname + "/example/template.html", "utf8");

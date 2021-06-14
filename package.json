@@ -23,12 +23,12 @@
     "babel-loader": "^8.2.2",
     "esm": "^3.2.25",
     "mocha": "^8.4.0",
-    "rollup-plugin-mv": "0.0.1"
+    "rollup-plugin-mv": "0.0.1",
+    "@rollup/plugin-html": "^0.2.3"
   },
   "dependencies": {
-    "@rollup/plugin-html": "^0.2.3",
-    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "sass": "^1.34.1",
     "snabbdom": "^3.0.1"
   }
 }

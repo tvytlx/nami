@@ -44,7 +44,7 @@ function compileText(text) {
 function compileNode(peekNode, children) {
   peekNode.funcStr = `h('${peekNode.tag}', ${compileAttrs(
     peekNode.attrs
-  )}, [${children.join(",")}])`;
+  )}, [${children.map((child) => child.funcStr).join(",")}])`;
   peekNode.completed = true;
 }
 
@@ -68,25 +68,40 @@ function parseHtml(template) {
       });
     },
     end: (tag) => {
-      if (tag in components) {
-        // 忽略掉组件的所有children
-        let peekNode = stack.pop();
-        while (peekNode.completed) {
-          peekNode = stack.pop();
-        }
+      let children = [];
+      let peekNode = stack.pop();
+      if (tag === "slot") {
+        const slot = peekNode.attrs.find((attr) => attr.name === "name");
+        // slot 没有 children
         stack.push({
           completed: true,
-          funcStr: `createComponent('${tag}', ${uuid()})`,
+          funcStr: `slotVnode['${slot.value}'] || ''`,
         });
         return;
       }
-      let children = [];
-      let peekNode = stack.pop();
       while (peekNode.completed) {
-        children.unshift(peekNode.funcStr);
+        children.unshift(peekNode);
         peekNode = stack.pop();
       }
+      if (tag in components) {
+        let slotVnodeMapStr = "{";
+        children.forEach((child) => {
+          if (child.slotName) {
+            slotVnodeMapStr += `${child.slotName}: ${child.funcStr},`;
+          }
+        });
+        slotVnodeMapStr += "}";
+        stack.push({
+          completed: true,
+          funcStr: `createComponent('${tag}', ${uuid()}, ${slotVnodeMapStr})`,
+        });
+        return;
+      }
       compileNode(peekNode, children);
+      const slot = peekNode.attrs.find((attr) => attr.name === "slot");
+      if (slot) {
+        peekNode.slotName = slot.value;
+      }
       stack.push(peekNode);
     },
     chars: (text) => {

@@ -52,10 +52,11 @@ class Watcher {
     this.depIds = new Set();
   }
   addDep(dep) {
-    if (!this.depIds.has(dep.id)) {
-      this.deps.push(dep);
-      this.depIds.add(dep.id);
-    }
+    // 这一段可有可无，观察者不需要知道自己观察了哪些依赖
+    // if (!this.depIds.has(dep.id)) {
+    //   this.deps.push(dep);
+    //   this.depIds.add(dep.id);
+    // }
     dep.addSub(this);
   }
   run() {

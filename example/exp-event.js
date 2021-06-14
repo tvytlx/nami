@@ -8,9 +8,10 @@ Nami.component("exp-event", {
     },
   },
   template: `
-<div>
-  <button @click="clickMe">clickMe</button>
-</div>
+  <n-card>
+    <div slot="content">
+      <button @click="clickMe">clickMe</button>
+    </div>
+  </n-card>
   `,
-  slotOn: "n-card",
 });
