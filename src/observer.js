@@ -30,7 +30,12 @@ class Dep {
   notify() {
     this.subs.forEach((sub) => {
       if (!wait) {
-        setTimeout(() => {
+        // setTimeout(() => {
+        //   wait = false;
+        //   Array.from(taskQueue).forEach((id) => subsMap[id].run());
+        //   taskQueue = new Set();
+        // });
+        Promise.resolve().then(() => {
           wait = false;
           Array.from(taskQueue).forEach((id) => subsMap[id].run());
           taskQueue = new Set();
