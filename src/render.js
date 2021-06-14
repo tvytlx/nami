@@ -2,7 +2,7 @@ import htmlParsing from "./html-parser";
 import { components } from "./components";
 import { uuid } from "./util";
 
-function compileAttrs(attrs) {
+function compileAttrs(attrs, node) {
   let eventFuncStr = "";
   let userFuncStr = "";
   let userAttrStr = "";
@@ -20,6 +20,8 @@ function compileAttrs(attrs) {
           userAttrStr += `value:${value},`;
           userFuncStr += `value:${value},`;
           eventFuncStr += `input: (ev, node)=>{${value} = node.elm.value;},`;
+        } else if (directive === "if") {
+          node.ifFuncStr = value;
         } else {
           userFuncStr += `${directive}:${value},`;
         }
@@ -49,8 +51,13 @@ function compileText(text) {
 
 function compileNode(peekNode, children) {
   peekNode.funcStr = `h('${peekNode.tag}', ${compileAttrs(
-    peekNode.attrs
+    peekNode.attrs,
+    peekNode
   )}, [${children.map((child) => child.funcStr).join(",")}])`;
+  // 存在 if 条件语句
+  if (peekNode.ifFuncStr) {
+    peekNode.funcStr = `${peekNode.ifFuncStr} ? ${peekNode.funcStr} : ''`;
+  }
   peekNode.completed = true;
 }
 
