@@ -2,4 +2,4 @@
 
 a vue-like frontend framework.
 
-[doc]()
+[doc](https://nami.vercel.app/)
