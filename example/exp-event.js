@@ -4,12 +4,12 @@ Nami.component("exp-event", {
   },
   methods: {
     clickMe(event) {
-      alert("clicked");
+      alert(event);
     },
   },
   template: `
     <div>
-      <button @click="clickMe">clickMe</button>
+      <button class="ring-1" @click="clickMe">clickMe</button>
     </div>
   `,
 });
