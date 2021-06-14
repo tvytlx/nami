@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require esm"
+    "test": "mocha --require esm",
+    "build": "rollup -c ./rollup.config.js && mv example dist/example"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,6 @@
   "dependencies": {
     "axios": "^0.21.1",
     "lodash-es": "^4.17.21",
-    "sass": "^1.34.1",
     "snabbdom": "^3.0.1"
   }
 }
