@@ -6,16 +6,15 @@ import babel from "@rollup/plugin-babel";
 import html from "@rollup/plugin-html";
 import example from "./example/index";
 import fs from "fs";
-import axios from "axios";
 
 function processExample() {
   let exampleScripts = "";
   let exampleHtml = "";
-  example.forEach((name) => {
+  example.forEach(([name, title]) => {
     exampleScripts += `<script src="/example/${name}.js"></script>`;
     // 复用组件，非example代码
     if (name.startsWith("n-")) return;
-    exampleHtml += `<${name}></${name}>`;
+    exampleHtml += `<n-card p-code="/example/${name}.js" p-title="${title}"><div slot="content"><${name}></${name}></div></n-card>`;
   });
   let content = fs.readFileSync(__dirname + "/example/template.html", "utf8");
   return content

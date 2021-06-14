@@ -68,6 +68,7 @@ class Nami {
     isComponent,
     props,
     created,
+    mounted,
   }) {
     this.id = uuid();
     this.depMap = {};
@@ -87,9 +88,10 @@ class Nami {
       this.render = compileToFunc(templateNode.outerHTML);
     }
     this.vnode.__instance = this;
-    // hooks
-    if (created) {
-      created.call(this);
+    this.created = created;
+    this.mounted = mounted;
+    if (this.created) {
+      this.created();
     }
   }
   initData(data, methods) {
