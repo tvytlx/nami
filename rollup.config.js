@@ -17,6 +17,11 @@ function processExample() {
     exampleHtml += `<n-card p-code="/example/${name}.js" p-title="${title}"><div slot="content"><${name}></${name}></div></n-card>`;
   });
   let content = fs.readFileSync(__dirname + "/example/template.html", "utf8");
+  if (process.env.NODE_ENV === "production") {
+    content = content.replace("namiScriptPath", "/nami.js");
+  } else {
+    content = content.replace("namiScriptPath", "/dist/nami.js");
+  }
   return content
     .replace("exampleScripts", exampleScripts)
     .replace("exampleHtml", exampleHtml);

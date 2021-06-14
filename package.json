@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --require esm",
-    "build": "rollup -c ./rollup.config.js && mv example dist/example"
+    "build": "NODE_ENV=production rollup -c ./rollup.config.js && cp example dist/example"
   },
   "repository": {
     "type": "git",
