@@ -23,7 +23,7 @@ function processExample() {
   exampleHtml =
     `<n-navleft p-titles="${titles.join(",")}" p-anchors="${names.join(
       ","
-    )}"></n-navleft><div class="lg:w-1/4 h-0"></div><div class="lg:w-3/4 w-full">` +
+    )}"></n-navleft><div class="lg:w-1/5 h-0 mr-3"></div><div class="lg:w-3/4 flex-grow">` +
     exampleHtml +
     "</div>";
   let content = fs.readFileSync(__dirname + "/example/template.html", "utf8");

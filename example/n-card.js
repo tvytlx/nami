@@ -18,7 +18,7 @@ Nami.component("n-card", {
   },
   template: `
 <div class="shadow-md m-3 p-3 bg-white divide-y-2 divide-indigo-300 divide-dotted">
-  <h1 class="font-medium text-2xl mb-3" :id="props.code"><a :href="'#'+props.code">{{props.title}}</a></h1>
+  <h1 class="block pt-6 -mt-6 font-medium text-2xl mb-3" :id="props.code"><a :href="'#'+props.code">{{props.title}}</a></h1>
   <div class="lg:flex lg:space-x-4 space-x-0 pt-3">
     <div class="lg:w-1/2 w-full">
       <h1>代码：</h1>
