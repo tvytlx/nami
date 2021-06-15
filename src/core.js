@@ -69,6 +69,7 @@ class Nami {
     data,
     methods,
     watch,
+    compute,
     template,
     slotVnode,
     isComponent,
@@ -84,6 +85,7 @@ class Nami {
     this.watcher = new Watcher(this);
     this.initData(data(), methods);
     this.initUserWatcher(watch);
+    this.initComputeWatcher(compute);
     if (isComponent) {
       this.render = compileToFunc(template);
       Dep.target = this.watcher;
@@ -117,6 +119,21 @@ class Nami {
     Object.keys(this.helper).forEach((key) =>
       shareProperty(this, "helper", key)
     );
+  }
+  initComputeWatcher(compute) {
+    if (!compute) return;
+    Object.keys(compute).forEach((key) => {
+      const watcher = new Watcher(this, () => {
+        const val = compute[key].call(this);
+        // computed值变了，才会触发渲染
+        if (val !== this[key]) {
+          this[key] = val;
+        }
+      });
+      Dep.target = watcher;
+      // 触发依赖生成
+      this[key] = compute[key].call(this);
+    });
   }
   initUserWatcher(watch) {
     if (!watch) return;
