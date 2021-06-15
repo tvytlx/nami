@@ -130,8 +130,10 @@ class Nami {
           this[key] = val;
         }
       });
+      // 触发compute watcher，渲染watcher的依赖生成
       Dep.target = watcher;
-      // 触发依赖生成
+      this[key] = compute[key].call(this);
+      Dep.target = this.watcher;
       this[key] = compute[key].call(this);
     });
   }
