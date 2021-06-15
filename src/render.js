@@ -22,8 +22,11 @@ function compileAttrs(attrs, node) {
           eventFuncStr += `input: (ev, node)=>{${value} = node.elm.value;},`;
         } else if (directive === "if") {
           node.ifFuncStr = value;
+        } else if (directive === "repeat") {
+          node.repeatFuncStr = `...[...Array(${value}).keys()].map((i)=>funcStr)`;
         } else {
           userFuncStr += `${directive}:${value},`;
+          userAttrStr += `${directive}:${value},`;
         }
         break;
       default:
@@ -37,12 +40,15 @@ function compileAttrs(attrs, node) {
 
 function compileText(text) {
   let str = `\`${text}\``;
-  return Array.from(text.matchAll(/{{\s*([\w\.]+)?\s*}}/g)).reduce(
+  return Array.from(text.matchAll(/{{\s*([\w\.\[\]]+)?\s*}}/g)).reduce(
     (acc, item) => {
       const capture = item[1];
       return (
         acc +
-        `.replace(/{{\\s*${capture.replace(".", `\.`)}\\s*}}/g, ${capture})`
+        `.replace(/{{\\s*${capture
+          .replace(".", `\\.`)
+          .replace("[", `\\[`)
+          .replace("]", `\\]`)}\\s*}}/g, ${capture})`
       );
     },
     str
@@ -57,6 +63,12 @@ function compileNode(peekNode, children) {
   // 存在 if 条件语句
   if (peekNode.ifFuncStr) {
     peekNode.funcStr = `${peekNode.ifFuncStr} ? ${peekNode.funcStr} : ''`;
+  }
+  if (peekNode.repeatFuncStr) {
+    peekNode.funcStr = peekNode.repeatFuncStr.replace(
+      "funcStr",
+      peekNode.funcStr
+    );
   }
   peekNode.completed = true;
 }

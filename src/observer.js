@@ -67,7 +67,12 @@ class Watcher {
   run() {
     Dep.target = this;
     if (this.cb) this.cb.call(this.vm, this.vm[this.cb.name]);
-    else update(this.vm);
+    else {
+      update(this.vm);
+      if (this.vm.updated) {
+        this.vm.updated();
+      }
+    }
   }
 }
 

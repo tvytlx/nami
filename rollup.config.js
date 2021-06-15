@@ -8,6 +8,8 @@ import example from "./example/index";
 import fs from "fs";
 
 function processExample() {
+  const names = [];
+  const titles = [];
   let exampleScripts = "";
   let exampleHtml = "";
   example.forEach(([name, title]) => {
@@ -15,7 +17,15 @@ function processExample() {
     // 复用组件，非example代码
     if (name.startsWith("n-")) return;
     exampleHtml += `<n-card p-code="/example/${name}.js" p-title="${title}"><div slot="content"><${name}></${name}></div></n-card>`;
+    names.push(`/example/${name}.js`);
+    titles.push(title);
   });
+  exampleHtml =
+    `<n-navleft p-titles="${titles.join(",")}" p-anchors="${names.join(
+      ","
+    )}"></n-navleft><div class="lg:w-1/4 h-0"></div><div class="lg:w-3/4 w-full">` +
+    exampleHtml +
+    "</div>";
   let content = fs.readFileSync(__dirname + "/example/template.html", "utf8");
   if (process.env.NODE_ENV === "production") {
     content = content.replace("namiScriptPath", "/nami.js");

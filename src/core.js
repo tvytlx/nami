@@ -5,6 +5,9 @@ import { shareProperty, uuid } from "./util";
 import { components, componentCache } from "./components";
 import axios from "axios";
 
+// mounted 没想好怎么实现，父子组件的依次调用，暂时弄个全局队列
+let mountedFuncQueue = [];
+
 function createComponent(name, key, slotVnode, props) {
   let componentInstance;
   let uuid = name + key;
@@ -20,6 +23,9 @@ function createComponent(name, key, slotVnode, props) {
       props,
     });
     componentCache[uuid] = componentInstance;
+  }
+  if (componentInstance.mounted) {
+    mountedFuncQueue.push(() => componentInstance.mounted());
   }
   return componentInstance.vnode;
 }
@@ -69,6 +75,7 @@ class Nami {
     props,
     created,
     mounted,
+    updated,
   }) {
     this.id = uuid();
     this.depMap = {};
@@ -90,6 +97,7 @@ class Nami {
     this.vnode.__instance = this;
     this.created = created;
     this.mounted = mounted;
+    this.updated = updated;
     if (this.created) {
       this.created();
     }
@@ -122,6 +130,14 @@ class Nami {
   }
   mount() {
     this.watcher.run();
+    if (this.mounted) {
+      mountedFuncQueue.push(() => this.mounted());
+    }
+    // 需要nextTick一下
+    Promise.resolve().then(() => {
+      mountedFuncQueue.forEach((fn) => fn());
+      mountedFuncQueue = [];
+    });
   }
 }
 
